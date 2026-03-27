@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyAI Chatbot - Enter OTP</title> 
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: #e2e8f0; 
+  }
+  
+  .auth-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    padding: 40px 30px;
+    border-radius: 20px; 
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+    text-align: center;
+    animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; 
+  }
+  
+  .auth-card h2 { 
+    margin: 0 0 5px 0; 
+    color: #ffffff; 
+    letter-spacing: 0.5px;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
+    color: #94a3b8; 
+    margin-bottom: 25px;
+    line-height: 1.4;
+  }
+
+  /* Specific styles for the 6-digit OTP layout */
+  .otp-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .otp-input {
+    width: 45px;
+    height: 55px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    border-radius: 10px; 
+    transition: all 0.3s ease;
+  }
+  
+  .otp-input:focus { 
+    border-color: #a855f7; 
+    background: rgba(0, 0, 0, 0.4);
+    outline: none; 
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25); 
+  }
+  
+  /* Hide the up/down arrows on number inputs */
+  .otp-input::-webkit-outer-spin-button,
+  .otp-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .otp-input[type=number] {
+    -moz-appearance: textfield;
+  }
+  
+  .auth-card button {
+    width: 100%; 
+    padding: 12px; 
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: white;
+    font-size: 1.05rem; 
+    font-weight: 600; 
+    border: none; 
+    border-radius: 10px;
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+  }
+  
+  .auth-card button:hover { 
+    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+    transform: translateY(-2px);
+  }
+  
+  .auth-card button:active { 
+    transform: translateY(1px); 
+  } 
+  
+  #msg { 
+    color: #fb7185;
+    margin-top: 15px; 
+    font-size: 0.9rem; 
+    min-height: 1.2em; 
+  }
+  
+  .helper-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+  }
+  
+  .helper-links a {
+    color: #c084fc; 
+    text-decoration: none;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+  
+  .helper-links a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+
+  @keyframes pop {
+    from { transform: translateY(20px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+  <div class="auth-card">
+    <h2>🤖 Verification</h2>
+    <p class="subtitle">Enter the 6-digit code sent to your email</p>
+    
+    <form id="otpForm">
+      <div class="otp-container">
+        <input type="number" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" required />
+        <input type="number" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" required disabled />
+        <input type="number" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" required disabled />
+        <input type="number" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" required disabled />
+        <input type="number" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" required disabled />
+        <input type="number" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" required disabled />
+      </div>
+      
+      <button type="submit" id="verifyButton">Verify Code</button>
+    </form>
+    
+    <p id="msg"></p>
+
+    <div class="helper-links">
+      <a id="resendCode">Didn't receive the code? Resend</a>
+    </div>
+  </div>
+
+  <script>
+    // Essential UX script: Auto-focus the next OTP input box as the user types
+    const inputs = document.querySelectorAll(".otp-input");
+    
+    inputs.forEach((input, index) => {
+      input.addEventListener("keyup", (e) => {
+        const currentInput = input;
+        const nextInput = input.nextElementSibling;
+        const prevInput = input.previousElementSibling;
+
+        // If the value has more than 1 character, clear it (prevents copy-paste bugs)
+        if (currentInput.value.length > 1) {
+          currentInput.value = currentInput.value.slice(0, 1);
+          return;
+        }
+        
+        // If a number is typed and there is a next input, focus it
+        if (nextInput && nextInput.hasAttribute("disabled") && currentInput.value !== "") {
+          nextInput.removeAttribute("disabled");
+          nextInput.focus();
+        }
+
+        // If the backspace key is pressed, focus the previous input
+        if (e.key === "Backspace") {
+          inputs.forEach((input, index2) => {
+            if (index <= index2 && prevInput) {
+              input.setAttribute("disabled", true);
+              currentInput.value = "";
+              prevInput.focus();
+            }
+          });
+        }
+      });
+    });
+
+    // You can handle the actual form submission in your app.js later
+  </script>
+
+  <script src="app.js"></script>
+</body>
+</html>

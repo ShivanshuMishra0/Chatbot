@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyAI - Ultimate Lamp Login</title>
+    <style>
+        :root {
+            --glow-color: #3b82f6;
+            --bg-dark: #020617; /* Typo 'z' removed */
+            --metallic-light: #cbd5e1;
+            --metallic-dark: #475569;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0; display: flex; justify-content: center; align-items: center;
+            height: 100vh; background-color: #000; font-family: 'Segoe UI', sans-serif;
+            overflow: hidden; transition: background 0.8s ease;
+        }
+
+        .container { display: flex; align-items: center; gap: 70px; position: relative; }
+
+        /* --- THE LAMP --- */
+        .lamp-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; }
+        .lamp-head {
+            width: 140px; height: 110px; background: #2a2a2a;
+            clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+            z-index: 5; transition: background 0.4s ease;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 15px 15px 0 0; transform-origin: bottom center;
+        }
+        /* Eyes power connected to lampHead instead of body */
+        .lamp-head.is-lit { background: #ffffff; box-shadow: 0 -10px 40px rgba(255, 255, 255, 0.2); }
+        
+        .shake-now { animation: headShake 0.6s ease-out; }
+        @keyframes headShake { 0%, 100% { transform: rotate(0deg); } 20% { transform: rotate(8deg); } 50% { transform: rotate(-5deg); } }
+
+        /* --- NATURAL EYES --- */
+        .eyes-container { display: flex; gap: 25px; margin-top: 10px; }
+        .eye {
+            width: 32px; height: 20px; background: rgba(255,255,255,0.05);
+            border-radius: 50% / 100% 100% 0% 0%; position: relative; overflow: hidden;
+            transition: background 0.3s, height 0.1s ease-in-out; border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+        .pupil { width: 12px; height: 12px; background: transparent; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: background 0.3s; }
+        
+        /* Eyes open when lampHead is lit */
+        .lamp-head.is-lit .eye { background: #fff; box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); animation: blink 4s infinite; border: none; }
+        .lamp-head.is-lit .pupil { background: #000; }
+        
+        @keyframes blink { 0%, 90%, 100% { height: 20px; } 95% { height: 1px; } }
+
+        /* --- STAND & LIGHT --- */
+        .lamp-stand { width: 14px; height: 130px; background: linear-gradient(to right, var(--metallic-dark), var(--metallic-light), var(--metallic-dark)); }
+        .lamp-base { width: 100px; height: 20px; background: linear-gradient(to bottom, var(--metallic-light), var(--metallic-dark)); border-radius: 20px; }
+        .thread { position: absolute; top: 100px; left: 35px; width: 2px; height: 90px; background: #64748b; cursor: pointer; z-index: 4; transition: transform 0.1s; }
+        .thread::after { content: ''; position: absolute; bottom: -12px; left: -6px; width: 14px; height: 14px; background: var(--metallic-light); border-radius: 50%; }
+        .thread:active { transform: translateY(12px); }
+        
+        .light-beam {
+            position: absolute; top: 110px; width: 350px; height: 450px;
+            background: radial-gradient(ellipse at top, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 80%);
+            clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); opacity: 0; transition: opacity 0.6s ease; pointer-events: none; z-index: 4;
+        }
+        .light-beam.active { opacity: 1; }
+
+        /* --- LOGIN CARD --- */
+        .login-card {
+            background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 24px;
+            width: 350px; opacity: 0; transform: scale(0.95); transition: all 0.7s ease; position: relative;
+        }
+        /* Card visibility triggered by .visible class */
+        .login-card.visible { 
+            opacity: 1; 
+            transform: scale(1); 
+            border-left: 2px solid var(--glow-color); 
+            box-shadow: -20px 0 60px rgba(59, 130, 246, 0.1); 
+        }
+
+        input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: white; outline: none; }
+        .login-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--glow-color), #1d4ed8); border: none; border-radius: 12px; color: #fff; font-weight: 600; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lamp-wrapper">
+            <div class="lamp-head" id="lampHead">
+                <div class="eyes-container">
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="eye"><div class="pupil"></div></div>
+                </div>
+            </div>
+            <div class="light-beam"></div>
+            <div class="thread" id="pullCord"></div>
+            <div class="lamp-stand"></div>
+            <div class="lamp-base"></div>
+        </div>
+        <div class="login-card" id="loginCard">
+            <h2 style="color: white; text-align: center; margin-bottom: 25px;">Welcome Back</h2>
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="Email Address" required />
+                <input type="password" id="password" placeholder="Password" required />
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px; font-size: 0.8rem;">
+                <a href="BOT_forget_pass.html" style="color: #64748b; text-decoration: none;">Forgot Password?</a>
+                <a href="BOT_signup.html" style="color: var(--glow-color); text-decoration: none; font-weight: bold;">Create Account</a>
+            </div>
+            <p id="msg" style="text-align: center; margin-top: 10px; font-size: 0.85rem;"></p>
+        </div>
+    </div>
+
+    <script>
+    const cord = document.getElementById('pullCord');
+    const head = document.getElementById('lampHead');
+    const beam = document.querySelector('.light-beam');
+    const card = document.getElementById('loginCard');
+    const pupils = document.querySelectorAll('.pupil');
+    const loginForm = document.getElementById('loginForm'); // Reference for login
+    const msg = document.getElementById('msg'); // Status message
+
+    // --- 1. LAMP & VISUAL LOGIC (Existing) ---
+    cord.addEventListener('click', () => {
+        const isLit = head.classList.toggle('is-lit');
+        beam.classList.toggle('active');
+        
+        if (isLit) card.classList.add('visible');
+        
+        head.classList.add('shake-now');
+        setTimeout(() => head.classList.remove('shake-now'), 600);
+        
+        new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3').play().catch(() => {});
+    });
+
+    // --- 2. EYE MOVEMENT LOGIC (Existing) ---
+    document.addEventListener('mousemove', (e) => {
+        if (!head.classList.contains('is-lit')) return;
+        
+        pupils.forEach(pupil => {
+            const rect = pupil.parentElement.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const x = (e.clientX - centerX) / 15;
+            const y = (e.clientY - centerY) / 10;
+            
+            const limitX = 8; const limitY = 4;
+            const limitedX = Math.max(-limitX, Math.min(limitX, x));
+            const limitedY = Math.max(-limitY, Math.min(limitY, y));
+            
+            pupil.style.transform = `translate(calc(-50% + ${limitedX}px), calc(-50% + ${limitedY}px))`;
+        });
+    });
+
+    // --- 3. LOGIN & SERVER CONNECTION (New Integration) ---
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const API = "http://127.0.0.1:5000";
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            msg.style.color = "#3b82f6";
+            msg.textContent = "Sir, verifying credentials...";
+
+            try {
+                const res = await fetch(`${API}/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    msg.style.color = "#34d399";
+                    msg.textContent = "Identity Confirmed. Accessing Mainframe...";
+                    
+                    // Save credentials for the session
+                    localStorage.setItem("username", data.fullname);
+                    localStorage.setItem("userEmail", email);
+                    
+                    // Redirect to OTP page
+                    setTimeout(() => { 
+                        window.location.href = "BOT_otp.html"; 
+                    }, 1200);
+                } else {
+                    msg.style.color = "#fb7185";
+                    msg.textContent = data.message || "Unauthorized Access, Sir.";
+                }
+            } catch (error) {
+                console.error("Neural Link Error:", error);
+                msg.style.color = "#fb7185";
+                msg.textContent = "System Error: Server connection lost.";
+            }
+        });
+    }
+</script>
+    <script src="app.js"></script>
+</body>
+</html>

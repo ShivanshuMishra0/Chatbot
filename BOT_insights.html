@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyAI - Generate Insights</title> 
+<style>
+  /* Reuse your theme variables */
+  :root {
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    --text-primary: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: -apple-system, sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-primary);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .insights-container {
+    width: 90%;
+    max-width: 900px;
+    height: 80vh;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .back-btn {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+  }
+
+  .back-btn:hover { color: #ffffff; }
+
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    overflow-y: auto;
+  }
+
+  .insight-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 20px;
+    border-radius: 16px;
+    transition: transform 0.3s;
+  }
+
+  .insight-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .card-icon { font-size: 1.5rem; margin-bottom: 15px; }
+  .card-title { font-weight: 600; margin-bottom: 10px; color: #a855f7; }
+  .card-desc { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="insights-container">
+    <div class="header">
+      <div>
+        <h1 style="font-size: 1.8rem;">📊 Data Insights</h1>
+        <p style="color: #64748b; font-size: 0.9rem;">Analytical breakdown of your current activity</p>
+      </div>
+      <a href="BOT_dashboard.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <div class="insight-grid">
+      <div class="insight-card">
+        <div class="card-icon">📈</div>
+        <div class="card-title">Usage Patterns</div>
+        <div class="card-desc">Your AI interaction has increased by 15% this week, focusing mainly on Python development.</div>
+      </div>
+
+      <div class="insight-card">
+        <div class="card-icon">🧪</div>
+        <div class="card-title">Topic Efficiency</div>
+        <div class="card-desc">Code debugging requests are solved 2x faster when providing specific error logs.</div>
+      </div>
+
+      <div class="insight-card">
+        <div class="card-icon">💡</div>
+        <div class="card-title">Project Suggestions</div>
+        <div class="card-desc">Based on your recent chats, you might enjoy exploring FastAPI for your next backend.</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
